@@ -1,0 +1,672 @@
+Profitable App Profiles for Apple and Android
+=============================================
+
+**Background:** We are data analysts for a company that builds iOS and Android mobile apps. Our apps are free to use and install. Our revenue consists mainly from in-app ads. Our job is to deliver insights to the app developers, so that they know which apps are worth developing.
+ 
+**Aim:** Analyze app data to discover which attract the most users and which are rated the highest. Using this data, we hope to impact the app creation process by pursuing those apps that generate the most in-app ad revenue.
+
+---
+
+The datasets can be found here:
+- [Apple App Store](https://www.kaggle.com/ramamet4/app-store-apple-data-set-10k-apps)
+- [Google Play Store](https://www.kaggle.com/lava18/google-play-store-apps)
+```{python}
+from csv import reader
+
+# Apple Store Data Set #
+ios_file = open("./data_sets/apple_app_store_data/AppleStore.csv",
+                encoding="utf8")
+read_ios = reader(ios_file)
+ios_data = list(read_ios)
+ios_header = ios_data[0]
+ios_data = ios_data[1:]
+
+# Google Play Data Set #
+google_file = open("./data_sets/google_play_store_data/googleplaystore.csv",
+                   encoding="utf8")
+read_google = reader(google_file)
+google_data = list(read_google)
+google_header = google_data[0]
+google_data = google_data[1:]
+```
+
+
+
+```{python}
+def explore_data(dataset, start, end, rows_and_columns=False):
+    dataset_slice = dataset[start:end]
+    for row in dataset_slice:
+        print(row)
+        print("\n")
+
+    if rows_and_columns:
+        print("Number of rows:", len(dataset))
+        print("Number of cols:", len(dataset[0]))
+# %%
+print(ios_header)
+```
+### Apple Apps
+
+| Column Name | Description |
+|------------|------------|
+| "id" | App ID |
+| "track_name" | App Name |
+| "size_bytes" | Size (in Bytes) |
+| "currency" | Currency Type |
+| "price" | Price amount |
+| "rating_count_tot" | User Rating counts (for all version) |
+| "rating_count_ver" | User Rating counts (for current version) |
+| "user_rating" | Average User Rating value (for all version) |
+| "user_rating_ver"| Average User Rating value (for current version) |
+| "ver" | Latest version code |
+| "cont_rating" | Content Rating |
+| "prime_genre" | Primary Genre |
+| "sup_devices.num" | Number of supporting devices |
+| "ipadSc_urls.num" | Number of screenshots showed for display |
+| "lang.num" | Number of supported languages |
+| "vpp_lic" | Vpp Device Based Licensing Enabled |
+
+
+
+```{python}
+print(google_header)
+```
+### Google Play Apps
+
+| Column Name | Description |
+| ------------------ | ------------------- |
+| "App" | Application name |
+| "Category" | Category |
+| "Rating" | User rating |
+| "Reviews" | # of Reviews |
+| "Size" | Size of app |
+| "Installs" | Number of user installs |
+| "Type" | Free or Paid |
+| "Price" | Price of app |
+| "Content Rating" | Age group the app is targeted at |
+| "Genres"  | Genre |
+| "Last Updated" | Last updated on play store |
+| "Current Ver" | Current version |
+| "Android Ver" | Minimum required Android version |
+
+
+
+Here we are checking a row that is inaccurate and deleting it from our data. It is missing a data point from a column. We see that it has 12 variable values as compared to the header which has length 13.
+```{python}
+print(google_data[10472])
+len(google_data[10472])
+len(google_header)
+
+#do not run twice or else you will delete a correct row
+del google_data[10472]
+print(google_data[10472])
+```
+
+
+---
+
+
+Clean the Data
+==============
+Duplicates
+-------------
+Upon exploring the data set further, we found that there are duplicate entries for some apps. We want to remove the duplicates, so that we only have each data point once, or else our analyzes can lead to inaccurate results and potentially, overfitting. Here we want to find the number of duplicate entries in our google play store data set.
+```{python}
+duplicate_apps_g = []
+unique_apps_g = []
+
+for app in google_data:
+    name = app[0]
+    if name in unique_apps_g:
+        duplicate_apps_g.append(name)
+    else:
+        unique_apps_g.append(name)
+
+print("Number of duplicate apps:", len(duplicate_apps_g))
+print('\n')
+print("Examples of duplicate apps:", duplicate_apps_g[:10])
+```
+
+
+We now do the same for the ios data set.
+```{python}
+duplicate_apps_ios = []
+unique_apps_ios = []
+
+for app in ios_data:
+    name = app[2]
+    if name in unique_apps_ios:
+        duplicate_apps_ios.append(name)
+    else:
+        unique_apps_ios.append(name)
+
+print("Number of duplicate apps:", len(duplicate_apps_ios))
+print('\n')
+print("Examples of duplicate apps:", duplicate_apps_ios[:10])
+```
+
+
+When removing duplicates, some duplicate entries may have been updated more recently than others. We can check this by looking at the reviews column and see which entry has more reviews and then keep only that entry. We are choosing to keep the most recent entry, because it has the most current, and therefore accurate, information about the app.
+
+
+### Identify Duplicates and Save Max Reviews
+First, we will find the apps and pair the name of the app with the greatest number of reviews it has received. If there is just one app, then the greatest number of reviews will come from that. If there are multiple, it will check the dictionary to see if there already is an entry, then it will update the entry if this new app has more reviews than the duplicate.
+```{python}
+reviews_max_g = {}
+
+for app in google_data:
+    name = app[0]
+    n_reviews = float(app[3])
+    if (name in reviews_max_g) and (n_reviews > reviews_max_g[name]):
+        reviews_max_g[name] = n_reviews
+    elif name not in reviews_max_g:
+        reviews_max_g[name] = n_reviews
+
+
+reviews_max_ios = {}
+
+for app in ios_data:
+    name = app[2]
+    n_reviews = float(app[6])
+    if (name in reviews_max_ios) and (n_reviews > reviews_max_ios[name]):
+        reviews_max_ios[name] = n_reviews
+    elif name not in reviews_max_ios:
+        reviews_max_ios[name] = n_reviews
+```
+
+
+
+### Remove Duplicates
+After we have the paired the app name with the greatest number of reviews out of all the entries, we can loop through the data again and add only the entries with the most reviews, while simultaneously removing any duplicate entries. This will leave us with a data set full of only unique entries.  
+In essence, loop through and only add the data to our cleaned dataset if the number of reviews of that entry is equal to the number of reviews in our max reviews dictionary `AND` the name is not already in the clean dataset.
+```{python}
+g_unique = []
+already_added_g =[]
+
+for app in google_data:
+    name = app[0]
+    n_reviews = float(app[3])
+    if (n_reviews == reviews_max_g[name]) and (name not in already_added_g):
+        g_unique.append(app)
+        already_added_g.append(name)
+
+
+ios_unique = []
+already_added_ios =[]
+
+for app in ios_data:
+    name = app[2]
+    n_reviews = float(app[6])
+    if (n_reviews == reviews_max_ios[name]) and (name not in already_added_ios):
+        ios_unique.append(app)
+        already_added_ios.append(name)
+```
+
+
+Check to make sure the number of apps in our cleaned dataset is correct.
+```{python}
+print("Length of Google Dataset:", len(google_data))
+print("Length of Google Duplicates:", len(duplicate_apps_g))
+print("Length of Google Clean = len(google_data) - len(duplicate_apps_g) =",
+      len(google_data), "-", len(duplicate_apps_g), "=",len(g_unique))
+print("\n")
+print("Length of iOS Dataset:", len(ios_data))
+print("Length of iOS Duplicates:", len(duplicate_apps_ios))
+print("Length of iOS Clean = len(ios_data) - len(duplicate_apps_ios) =",
+      len(ios_data), "-", len(duplicate_apps_ios), "=",len(ios_unique))
+```
+
+
+---
+
+
+Non-English Apps
+-----------------
+After cleaning our apps of any duplicates, we would like to remove any apps that are not in English. Since our company only develops apps in English, we want data relevant to our developers.  
+Here are some examples of non-English apps in the apple store and google play store.
+```{python}
+print(ios_data[814][2])
+print(ios_data[6734][2])
+print("\n")
+print(g_unique[4412][0])
+print(g_unique[7940][0])
+```
+
+
+
+### Identify Non-English Apps
+I will now create a function to discern English characters from non-English characters, so that we can remove the non-English app names. English characters return ASCII values < 128 when a character is input to the ord() function. Our `is_english()` function will return `False` if there exists one letter that is a non-English in the world, and `True` if there exists no non-English letter in the whole word.
+```{python}
+def is_english(word):
+    for char in word:
+        if ord(char) > 127:
+            return False
+    return True
+```
+```{python}
+print("is_english_word() Check:")
+print("Instagram:,", is_english("Instagram"))
+print("爱奇艺PPS -《欢乐颂2》电视剧热播:,", is_english("爱奇艺PPS -《欢乐颂2》电视剧热播"))
+print("Docs To Go™ Free Office Suite:,", is_english("Docs To Go™ Free Office Suite"))
+print("Instachat 😜:,", is_english("Instachat 😜"))
+print("\n")
+print(ord("™"))
+print(ord("😜"))
+```
+
+
+As can be seen, the function is not able to correctly identify English apps solely based on ASCII values less than 128. Emojis and characters like ™ both return values greater than 127 even though the app names are in English. To slightly correct for this, I am going to create a character limit of 3 non-English letters. If there are more than 3 non-English letters, it will return False, otherwise True.
+```{python}
+def is_english(word):
+    count = 0
+    for char in word:
+        if ord(char) > 127:
+            count += 1
+    if count > 3:
+        return False
+    else:
+        return True
+```
+```{python}
+print("is_english_word() Check:")
+print("Instagram:,", is_english("Instagram"))
+print("爱奇艺PPS -《欢乐颂2》电视剧热播:,", is_english("爱奇艺PPS -《欢乐颂2》电视剧热播"))
+print("Docs To Go™ Free Office Suite:,", is_english("Docs To Go™ Free Office Suite"))
+print("Instachat 😜:,", is_english("Instachat 😜"))
+```
+This is not perfect, but for our purposes, it can filter out most of the non-English apps. If we want, we can also check to see which apps that were English that it may have filtered out.
+
+
+### Remove Non-English Apps
+```{python}
+g_english= []
+ios_english = []
+
+for app in g_unique:
+    name = app[0]
+    if is_english(name):
+        g_english.append(app)
+
+
+for app in ios_unique:
+    name = app[2]
+    if is_english(name):
+        ios_english.append(app)
+```
+```{python}
+print("Length of Google English:", len(g_english))
+print("\n")
+print("Length of iOS English:", len(ios_english))
+```
+
+
+---
+
+
+Isolate the Free Apps
+---------------------
+Since our developers will only be creating a free apps, we want our analysis to only include free apps, so that our analysis is representative of only those apps we are going to build.
+```{python}
+g_free = []
+ios_free = []
+
+for app in g_english:
+    price = app[7]
+    if price == "0":
+        g_free.append(app)
+
+
+for app in ios_english:
+    price = app[5]
+    if price == "0":
+        ios_free.append(app)
+```
+```{python}
+print("Length of Google Free:", len(g_free))
+print("Length of iOS Free:", len(ios_free))
+```
+
+
+---
+
+
+Most Common Apps by Genre
+=========================
+
+Our validation strategy for building apps is:
+
+1. Build a minimal version of the app, and add it to Google Play.
+2. If the app has a good response from users, we develop it further.
+3. If the app is profitable after six months, we build an iOS version of the app and add it to the Apple Store.  
+
+Since we generate revenue based on in-app ads, we want to see which app types are most popular. Once we know which apps are most popular, we can focus our time on those projects that are more likely to be successful.  
+First we are going to explore the datasets to see which information may be useful in determining the popularity, defined by the number of users, of an app.
+```{python}
+print(ios_header)
+print("\n")
+print(google_header)
+```
+
+
+In order to determine which genres are the most popular, we are going to create frequency tables displaying the percentages of apps in each genre category for both iOS and Google Play.  
+We are going to look at the columns:
+
+- Google: Category
+- Google: Genres
+- iOS: prime_genre
+
+We are building two functions to create frequency tables for the individual columns of the datasets to see which categories and genres are the most popular.  
+
+> freq_table(dataset, index) will create frequency tables that show percentages  
+> display_table(dataset, index) will display the percentages in a descending order
+```{python}
+def freq_table(dataset, index):
+    table = {}
+    n_apps = len(dataset)
+
+    for app in dataset:
+        var = app[index]
+        if var in table:
+            table[var] += 1
+        else:
+            table[var] = 1
+
+    #convert counts to percentages
+    for key in table:
+        table[key] = table[key] / n_apps * 100
+
+    return table
+
+
+def display_table(dataset, index):
+    table = freq_table(dataset, index)
+    table_display = []
+    for key in table:
+        key_val_as_tuple = (table[key], key)
+        table_display.append(key_val_as_tuple)
+
+    table_sorted = sorted(table_display, reverse = True)
+    for entry in table_sorted:
+        print(entry[1], ':', format(entry[0], ".2f"))
+```
+
+---
+
+### Google - Category
+
+The most common categories for Google Play Store are:
+
+1. Family
+2. Game
+3. Tools
+4. Business
+5. Lifestyle
+```{python}
+print("Freqeuncy Table (%) Google:", google_header[1])
+display_table(g_free, 1)
+```
+
+---
+
+### Google - Genres
+
+The most common genres for Google Play Store are:
+
+1. Tools
+2. Entertainment
+3. Education
+4. Business
+5. Productivity
+
+Free, English, Google apps are designed for a mix of practical and entertainment purposes. The category and genre frequency tables for Google suggest that developing a mix of practical and entertainment apps would be a good strategy. The Genres column also seems to be more granular than the Category column.
+```{python}
+print("Freqeuncy Table (%) Google:", google_header[9])
+display_table(g_free, 9)
+```
+
+---
+
+### iOS - Prime Genre
+
+The most common genres for iOS App Store are:
+
+1. Games
+2. Entertainment
+3. Photo and Video
+4. Education
+5. Social Networking
+
+Most free, English, iOS apps are designed for entertainment. From the number of designed apps, it would suggest that developing iOS gaming and entertainment apps will be more profitable than productivity apps.
+```{python}
+print("Freqeuncy Table (%) iOS:", ios_header[12])
+display_table(ios_free, 12)
+```
+
+
+In summary, the Google Play store has a mix of entertainment and practical apps. The Apple store tends to have more entertainment and gaming apps.  
+However, these frequency tables do not tell us how many users are using the apps, only the number of developed apps that are designed for entertainment purposes. It would be wise to look at the number of installs and user reviews on each app in order to more effectively determine the popularity of each app.
+
+
+---
+
+
+Most Popular Apps by Genre
+==========================
+Number of Installs
+------------------
+To get a sense of what genres have the most users, we are going to find the average number of installs for each app genre. For the Google Play data set, we can find this information in the `Installs` column, but this information is missing for the Apple App Store data set. As a proxy, we will use the total number of user ratings, `rating_count_tot` for the Apple App Store.   
+
+
+### Most Popular Apps by Genre on the App Store
+We will start by calculating the average number of user ratings per app genre on the App Store. To do that, we will need to:
+
+- Isolate the apps of each genres
+- Sum up the user ratings for the apps of that genres
+- Divide the sum by the number of apps belonging to that genre (not by the total number of apps)
+
+We are going to iterate over the apps and add the total number of ratings for that app and genre to a dictionary containing the genre name as the key with a tuple: (total rating count, total number of apps in genre) as the key.
+```{python}
+# app name: ios_header[2]
+# rating count total: ios_header[6]
+# prime genre: ios_header[12]
+ios_genre_ratings = {}
+
+for app in ios_free:
+    genre = app[12]
+    app_user_ratings = float(app[6])
+    
+    if genre in ios_genre_ratings:
+        genre_tot_ratings = ios_genre_ratings[genre][0] + app_user_ratings
+        genre_tot_count = ios_genre_ratings[genre][1] + 1
+        ios_genre_ratings[genre] = (genre_tot_ratings, genre_tot_count)
+    elif genre not in ios_genre_ratings:
+        ios_genre_ratings[genre] = (app_user_ratings, 1)
+    
+    
+ios_genre_avg_ratings = []
+for genre in ios_genre_ratings:
+    genre_ratings = ios_genre_ratings[genre][0]
+    genre_count = ios_genre_ratings[genre][1]
+    genre_avg_ratings = genre_ratings / genre_count
+    ios_genre_avg_ratings.append((genre_avg_ratings, genre))
+
+ios_genre_avg_ratings = sorted(ios_genre_avg_ratings, reverse = True)
+
+print("Average Number of Ratings by Genre")
+for item in ios_genre_avg_ratings:
+    print(item[1] + " avg. rating: " + str(item[0]))
+```
+Based on the information above, it suggests to build navigation, reference, social networking, and/or music applications.
+
+
+Upon further investigation, those categories are heavily dominated by a few apps with lots of reviews, as opposed to a majority of apps with a medium number of reviews.  
+Here we are going to print the name and number of reviews for the navigation apps. As we can see, Waze and Google skew the distribution of ratings with half a million combined reviews.
+```{python}
+navigation_apps = []
+
+for app in ios_free:
+    if app[12] == 'Navigation':
+        name = app[2]
+        rating_count = float(app[6])
+        if (rating_count, name) not in navigation_apps:
+            navigation_apps.append((rating_count, name))
+        
+navigation_apps = sorted(navigation_apps, reverse = True)
+
+for i in range(min(10, len(navigation_apps))):
+    name = navigation_apps[i][1]
+    rating_count = navigation_apps[i][0]
+    print(name, ": ", rating_count)
+```
+
+
+The same as above for reference apps. The Bible and dictionary have over a million combined reviews.
+```{python}
+reference_apps = []
+
+for app in ios_free:
+    if app[12] == 'Reference':
+        name = app[2]
+        rating_count = float(app[6])
+        if (rating_count, name) not in reference_apps:
+            reference_apps.append((rating_count, name))
+        
+reference_apps = sorted(reference_apps, reverse = True)
+
+for i in range(min(10, len(reference_apps))):
+    name = reference_apps[i][1]
+    rating_count = reference_apps[i][0]
+    print(name, ": ", rating_count)
+```
+
+
+The same as above for social networking apps. Again a few apps (Facebook, Pinterest, Skype) dominate the number of reviews.
+```{python}
+social_apps = []
+
+for app in ios_free:
+    if app[12] == 'Social Networking':
+        name = app[2]
+        rating_count = float(app[6])
+        if (rating_count, name) not in social_apps:
+            social_apps.append((rating_count, name))
+        
+social_apps = sorted(social_apps, reverse = True)
+
+for i in range(min(10, len(social_apps))):
+    name = social_apps[i][1]
+    rating_count = reference_apps[i][0]
+    print(name, ": ", rating_count)
+```
+Our initial conclusion to build a reference, navigation, social networking, and/or music app would have potentially led us to build an unsuccessful app due to heavy competition. This case illustrates the importance of looking at the full shape of each distribution, in this case if there are outliers, to determine which market would lead to a successful app.  
+We want to build an app that would require the least amount of overhead and outsider knowledge as opposed to apps like finance and photo and video. Also, to build a food and drink or a shopping app, we would need to own a store, which we do not. Since it seems that some genres are dominated by a few apps and others would require outsider knowledge, my suggestion is to build a health and fitness, game, or productivity app. 
+
+---
+
+### Most Popular Apps by Genre on Google Play
+Now we are going to perform analysis on the number of installs for each genre in the Google Play Store. We first want to get a sense of what that data looks like. The number of installs can be found in the 5th column of the google data set.
+```{python}
+# installs: google_header[5]
+display_table(g_free, 5)
+```
+It seems that the number of installs is a discrete variable only giving a value on the lower end of the range it is in. i.e. 1,200,000 installs would be labeled 1,000,000+, 15 installs would be labeled 10+. Since our analysis does not need to be super precise, we will do fine with just using the category as a proxy for the number of installs the app has.  
+Now, we want to convert the install category into a float, so that we can add the total number of installs together for each app in the genre and then with it, compute the average number of installs per app in that genre. We will need to remove the commas and plus sign before converting it to a float.  
+We are going to iterate over the apps and add the total number of installs for that app and genre to a dictionary containing the genre name as the key with a tuple: (total rating count, total number of apps in genre) as the key.
+```{python}
+# app name: google_header[0]
+# category: google_header[1]
+# installs: google_header[5]
+
+g_cat_installs = {}
+
+for app in g_free:
+    category = app[1]
+    user_installs = app[5]
+    user_installs = user_installs.replace(",", "")
+    user_installs = user_installs.replace("+", "")
+    user_installs = float(user_installs)
+    
+    if category in g_cat_installs:
+        cat_tot_installs = g_cat_installs[category][0] + user_installs
+        cat_tot_count = g_cat_installs[category][1] + 1
+        g_cat_installs[category] = (cat_tot_installs, cat_tot_count)
+    elif category not in g_cat_installs:
+        g_cat_installs[category] = (user_installs, 1)
+    
+    
+g_cat_avg_installs = []
+
+for category in g_cat_installs:
+    cat_installs = g_cat_installs[category][0]
+    cat_count = g_cat_installs[category][1]
+    cat_avg_ratings = cat_installs / cat_count
+    g_cat_avg_installs.append((cat_avg_ratings, category))
+
+g_cat_avg_installs = sorted(g_cat_avg_installs, reverse = True)
+
+print("Average Number of Installs by Category")
+for item in g_cat_avg_installs:
+    print(item[1] + " avg. installs: " + str(item[0]))
+```
+
+
+As we did with the Apple App Store data set, lets see if any of these categories are dominated, and hence skewed, by a few outliers. First, we will start with communication as it has the largest number of average installs.
+```{python}
+communication_apps = []
+
+for app in g_free:
+    if app[1] == 'COMMUNICATION':
+        name = app[0]
+        user_installs = app[5]
+        user_installs = user_installs.replace(",", "")
+        user_installs = user_installs.replace("+", "")
+        user_installs = float(user_installs)
+        if (user_installs, name) not in communication_apps:
+            communication_apps.append((user_installs, name))
+        
+communication_apps = sorted(communication_apps, reverse = True)
+
+for i in range(min(10, len(communication_apps))):
+    name = communication_apps[i][1]
+    user_installs = communication_apps[i][0]
+    print(name, ": ", user_installs)
+```
+Communication apps seem to be dominated by a few apps like WhatsApp, Skype, Messenger, Hangouts, and Google Chrome which have over a billion installs each.
+
+
+What about Video Players?
+```{python}
+video_apps = []
+
+for app in g_free:
+    if app[1] == 'VIDEO_PLAYERS':
+        name = app[0]
+        user_installs = app[5]
+        user_installs = user_installs.replace(",", "")
+        user_installs = user_installs.replace("+", "")
+        user_installs = float(user_installs)
+        if (user_installs, name) not in video_apps:
+            video_apps.append((user_installs, name))
+        
+video_apps = sorted(video_apps, reverse = True)
+
+for i in range(min(10, len(video_apps))):
+    name = video_apps[i][1]
+    user_installs = video_apps[i][0]
+    print(name, ": ", user_installs)
+```
+Video Players are dominated by a few like Youtube and Google Play Movies & TV which also have over a billion installs each.
+
+The other categories like social are also dominated by a few players (Instagram, Google+, Facebook, Snapchat, etc.). Our analysis of the Google Play data set also suggests that we should not make an app in a heavy competition setting like social networking, communication, and video players. Therefore, in agreement with the Apple App Store analysis, I suggest making an app in the productivity, gaming, or health and fitness category.
+
+
+---
+
+
+Conclusion
+==========
+We went into the analysis with the mindset of analyzing free, English apps to provide our developers with the categories of app development that show the most potential for profitability. Here, our measure of profitability is based on the number of users we expect to use an app, and therefore see and interact with in-app ads, our main source of revenue.
+
+We have analyzed both the Apple App Store and Google Play data set. In both data sets, we discovered that a few apps dominated some categories like social networking, video players, communication, navigation, and reference apps. It is in our best interest to stay out of dominated markets where only a few apps get a majority of the users. We also considered the requirements and outside domain knowledge we would need to make apps in the food and drink, shopping, and finance category.
+
+Based on this information, we selected productivity, gaming, and health and fitness categories as our target markets for app development.
