@@ -1,0 +1,176 @@
+Exploring Hacker News Posts
+===========================
+Today, we are going to explore posts from the popular technology site [Hacker News](https://news.ycombinator.com/). The data set being used contains posts for a year (September 2015-2016). The data set can be found [here](https://www.kaggle.com/hacker-news/hacker-news-posts).
+
+**Definitions:**  
+- `Ask HN` refers to posts that begin with "Ask HN", or Ask Hacker News. These posts are users asking the Hacker News community questions.  
+- `Show HN` refers to posts that begin with "Show HN", or Show Hacker News. These posts are users showing other users anything, for example, projects, news articles, or websites.
+
+**Aim:**    
+- Determine which types of posts receive more comments: posts labeled `Ask HN` or `Show HN`?   
+- Determine if the time of the posting has an effect on amount of comments received. i.e. do posts in the morning receive more comments than posts in the evening?
+
+We are going to start off by reading in the data set and exploring a couple rows of the data.
+```{python}
+from csv import reader
+opened_file = open("../data_sets/hacker_news_posts/"
+                   + "hacker_news.csv")
+read_file = reader(opened_file)
+hn_data = list(read_file)
+hn_header = hn_data[0]
+hn_data = hn_data[1:]
+```
+```{python}
+print(hn_header)
+print(hn_data[:5])
+```
+Here is a summary of the data set.
+
+| Column Name  | Column Description                                           |
+|--------------|--------------------------------------------------------------|
+| id           | Unique id for the post                                       |
+| title        | Title of the post                                            |
+| url          | The URL of the item being linked to                          |
+| num_points   | The number of upvotes the post received                      |
+| num_comments | The number of comments the post received                     |
+| author       | The name of the account that made the post                   |
+| created_at   | The date and time the post was made (Eastern Time in the US) |
+
+---
+
+
+Ask HN vs Show HN
+-----------------
+Since we are only concerned with posts that contain `Ask HN` or `Show HN`, we are going to filter out any posts that do not contain those phrases inside the post title. Here we retrieve the title of the post from index 1 of each row, convert the title to lowercase so that we can check to see if the post contains `Ask HN` or `Show HN` without reference to capitalization of the letters, and then put that row in its specified list.
+```{python}
+ask_posts = []
+show_posts = []
+other_posts = []
+
+for row in hn_data:
+    #hn_header[1]: title
+    title = row[1]
+    title_lower = title.lower()
+    if "ask hn" in title_lower:
+        ask_posts.append(row)
+    elif "show hn" in title_lower:
+        show_posts.append(row)
+    else:
+        other_posts.append(row)
+        
+print("Length of {0} posts: {1}".format("ask", len(ask_posts)))
+print("Length of {0} posts: {1}".format("show", len(show_posts)))
+print("Length of {0} posts: {1}".format("other", len(other_posts)))
+```
+
+
+Now we are going to visually examine some of the rows to see if the sorting algorithm was accurate.
+```{python}
+print("Ask Posts:")
+for i in range(5):
+    print(ask_posts[i])
+
+print("\n")
+
+print("Show Posts:")
+for i in range(5):
+    print(show_posts[i])
+```
+It looks good.
+
+
+Here we determine which posts are more popular `Ask HN` or `Show HN` using comments as our current measure of popularity. My intuition leads me to guess that `Ask HN` posts will be more popular. By nature, these posts ask questions, so we expect answers from users.
+```{python}
+total_ask_comments = 0
+total_show_comments = 0
+
+for row in ask_posts:
+    #hn_header[4]: num_comments
+    num_comments = int(row[4])
+    total_ask_comments += num_comments
+    
+for row in show_posts:
+    num_comments = int(row[4])
+    total_show_comments += num_comments
+    
+avg_ask_comments = total_ask_comments / len(ask_posts)
+avg_show_comments = total_show_comments / len(show_posts)
+
+avg_string_tem = "Average number of {0} comments per post: {1}"
+
+print(avg_string_tem.format("ask", avg_ask_comments))
+print(avg_string_tem.format("show", avg_show_comments))
+```
+It seems that on average `Ask HN` posts received approximately 5 more comments per post than `Show HN` posts.
+
+
+---
+
+
+Does the Time the Post was Created Affect the Number of Comments Received?
+--------------------------------------------------------------------------
+Since `Ask HN` posts received more comments on average, we are going to focus the remaining analysis just on these posts.  
+We are now going to analyze if the time that the post was created has an effect on the number of comments received.
+
+First, we are going to calculate the amount of ask posts created in each hour of the day along with the number of comments received.   
+Second, we are going to calculate the average number of comments ask posts receive by hour created.
+```{python}
+import datetime as dt
+
+result_list = []
+
+for row in ask_posts:
+    #hn_header[6]: created_at
+    #hn_header[4]: num_comments
+    created_at = row[6]
+    num_comments = int(row[4])
+    
+    result_list.append([created_at, num_comments])
+    
+counts_by_hour = {}
+comments_by_hour = {}
+
+for row in result_list:
+    created_at = row[0]
+    num_comments = row[1]
+    time = dt.datetime.strptime(created_at, "%m/%d/%Y %H:%M")
+    hour = time.strftime("%H")
+    
+    if hour in counts_by_hour:
+        counts_by_hour[hour] += 1
+        comments_by_hour[hour] += num_comments
+    else:
+        counts_by_hour[hour] = 1
+        comments_by_hour[hour] = num_comments
+```
+
+
+Here we calculate the average comments by hour, `avg_by_hour` using `comments_by_hour` and `counts_by_hour` from above. Then, we sort `avg_by_hour` by the average comments by hour in descending order. We will also print the top 5 hours that have the most average comments per ask post.
+```{python}
+avg_by_hour = []
+
+for hour in counts_by_hour:
+    avg_comments = comments_by_hour[hour] / counts_by_hour[hour]
+    avg_by_hour.append([hour, avg_comments])
+
+avg_by_hour = sorted(avg_by_hour, key=lambda x: x[1], reverse = True)
+
+print("Top 5 Hours for Ask Posts Comments")
+for i in range(5):
+    template = "{hour}: {avg:.2f} average comments per post"
+    time = dt.datetime.strptime(avg_by_hour[i][0], "%H")
+    time = time.strftime("%H:%M")
+    avg_comments = avg_by_hour[i][1]
+    print(template.format(hour = time, avg = avg_comments))
+```
+According to the average comments per post by hour, the data would suggest that posting during 3pm, 1pm, 12pm, 2am, or 10am Eastern Time would increase your chances of receiving more comments.
+
+
+---
+
+
+Conclusions
+===========
+
+1. We found that `Ask HN` posts receive more comments on average than `Show HN` posts. This could be attributed to the nature of `Ask HN` posts. Users are asking questions, and we expect other uses to answer, or comment on, their questions.
+2. We then sought to discover if time played a factor in the number of comments on a post. For this analysis, we chose to look at `Ask HN` posts only. Through the analysis, we discovered that 3pm, 1pm, 12pm, 2am, and 10am Eastern Time were the creation times of posts that received the most comments on average.
