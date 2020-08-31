@@ -1,0 +1,11 @@
+Navigation Tabs: Home, Projects, Courses, Resume, Insightful Reads
+
+Home: Contains profile picture, about me section, and a visual image with link to projects. Under profile picture, put icons with links to GitHub and LinkedIn. Also, put contact information under profile picture.
+
+Projects: Contains blocks of content with headers and small descriptions of the project.
+
+Courses: Relevant courses I have taken for data science
+
+Resume: Image of my resume with link to download it (pdf)
+
+Insightful Reads: Books I have read that have changed my life and to which I recommend others read
