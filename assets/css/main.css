@@ -1903,6 +1903,30 @@ input, select, textarea {
 			width: auto;
 		}
 
+		.left_centered {
+			text-align: left;
+			padding-left: 15px;
+		}
+
+		.left_centered p {
+			margin-bottom: 25px;
+		}
+
+		.course_list {
+			padding-left: 30px;
+		}
+
+		#small_title {
+			padding-left:10px;
+			margin-bottom: 0px;
+		}
+
+		@media screen and (max-width: 736px){
+			#small_title {
+				font-size: 0.95em;
+				padding-left: 10px;
+			}
+		}
 /* Icons */
 
 	.icon {
