@@ -2478,7 +2478,23 @@ input, select, textarea {
 	@media screen and (max-width: 400px) {
 
 		#nav {
-			font-size: 8px;
+			font-size: 10px;
+		}
+
+	}
+
+	@media screen and (max-width: 340px) {
+
+		#nav {
+			font-size: 9px;
+		}
+
+	}
+
+	@media screen and (max-width: 310px) {
+
+		#nav {
+			font-size: 7px;
 		}
 
 	}
