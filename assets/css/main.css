@@ -2470,12 +2470,20 @@ input, select, textarea {
 	@media screen and (max-width: 600px) {
 
 		#nav {
-			font-size: 11px;
+			font-size: 13px;
 		}
 
 	}
 
-	@media screen and (max-width: 400px) {
+	@media screen and (max-width: 430px) {
+
+		#nav {
+			font-size: 12px;
+		}
+
+	}
+
+	@media screen and (max-width: 390px) {
 
 		#nav {
 			font-size: 10px;
@@ -2494,7 +2502,7 @@ input, select, textarea {
 	@media screen and (max-width: 310px) {
 
 		#nav {
-			font-size: 7px;
+			font-size: 8px;
 		}
 
 	}
