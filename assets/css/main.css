@@ -2529,7 +2529,7 @@ input, select, textarea {
 	@media screen and (max-width: 740px) {
 
 		#nav {
-			font-size: 13px;
+			font-size: 1em;
 		}
 
 	}
@@ -2537,7 +2537,7 @@ input, select, textarea {
 	@media screen and (max-width: 600px) {
 
 		#nav {
-			font-size: 12px;
+			font-size: 0.9em;
 		}
 
 	}
@@ -2545,7 +2545,7 @@ input, select, textarea {
 	@media screen and (max-width: 530px) {
 
 		#nav {
-			font-size: 11px;
+			font-size: 0.8em;
 		}
 
 	}
@@ -2553,7 +2553,7 @@ input, select, textarea {
 	@media screen and (max-width: 490px) {
 
 		#nav {
-			font-size: 10px;
+			font-size: 0.75em;
 		}
 
 	}
@@ -2561,7 +2561,7 @@ input, select, textarea {
 	@media screen and (max-width: 465px) {
 
 		#nav {
-			font-size: 9px;
+			font-size: 0.7em;
 		}
 
 	}
@@ -2569,31 +2569,47 @@ input, select, textarea {
 	@media screen and (max-width: 430px) {
 
 		#nav {
-			font-size: 8px;
+			font-size: 0.65em;
 		}
 
 	}
 
-	@media screen and (max-width: 370px) {
+	@media screen and (max-width: 380px) {
 
 		#nav {
-			font-size: 7px;
+			font-size: 0.6em;
 		}
 
 	}
 
-	@media screen and (max-width: 335px) {
+	@media screen and (max-width: 350px) {
 
 		#nav {
-			font-size: 6px;
+			font-size: 0.55em;
 		}
 
 	}
 
-	@media screen and (max-width: 300px) {
+	@media screen and (max-width: 330px) {
 
 		#nav {
-			font-size: 5px;
+			font-size: 0.5em;
+		}
+
+	}
+
+	@media screen and (max-width: 315px) {
+
+		#nav {
+			font-size: 0.45em;
+		}
+
+	}
+
+	@media screen and (max-width: 290px) {
+
+		#nav {
+			font-size: 0.4em;
 		}
 
 	}
