@@ -2526,7 +2526,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 740px) {
+	@media screen and (max-width: 745px) {
 
 		#nav {
 			font-size: 1em;
