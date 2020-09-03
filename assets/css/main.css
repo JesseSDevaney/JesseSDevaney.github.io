@@ -1966,6 +1966,17 @@ input, select, textarea {
 			font-size: 0.85em;
 		}
 
+		.authors {
+			padding-left:10px;
+			margin-bottom: -5px;
+			font-size: 1em;
+			font-weight: 500;
+		}
+
+		.degree_adjectives {
+			font-size: 0.7em;
+		}
+
 		@media screen and (max-width: 736px){
 			.small_title {
 				font-size: 0.95em;
