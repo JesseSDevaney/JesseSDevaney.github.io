@@ -1,3 +1,6 @@
-# Future Website Additions
+# Jesse's Personal Website
 
-Currently none.
+This repository is for hosting my [personal website](https://jessesdevaney.github.io/) and portfolio projects.
+
+### Website To-do
+- Currently nothing
