@@ -2366,7 +2366,7 @@ input, select, textarea {
 
 /* Small */
 
-	@media screen and (max-width: 736px) {
+	@media screen and (max-width: 850px) {
 
 		/* Basic */
 
@@ -2573,12 +2573,11 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 745px) {
+	@media screen and (max-width: 850px) {
 
 		#nav {
 			font-size: 1em;
 		}
-
 	}
 
 	@media screen and (max-width: 740px) {
@@ -2595,7 +2594,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: 680px) {
 
 		#nav {
 			font-size: 0.9em;
@@ -2603,7 +2602,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 530px) {
+	@media screen and (max-width: 630px) {
 
 		#nav {
 			font-size: 0.8em;
@@ -2611,7 +2610,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 490px) {
+	@media screen and (max-width: 550px) {
 
 		#nav {
 			font-size: 0.75em;
@@ -2619,7 +2618,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 465px) {
+	@media screen and (max-width: 520px) {
 
 		#nav {
 			font-size: 0.7em;
@@ -2627,7 +2626,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 430px) {
+	@media screen and (max-width: 490px) {
 
 		#nav {
 			font-size: 0.65em;
@@ -2635,7 +2634,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 380px) {
+	@media screen and (max-width: 460px) {
 
 		#nav {
 			font-size: 0.6em;
@@ -2643,7 +2642,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 350px) {
+	@media screen and (max-width: 414px) {
 
 		#nav {
 			font-size: 0.55em;
@@ -2651,7 +2650,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 330px) {
+	@media screen and (max-width: 380px) {
 
 		#nav {
 			font-size: 0.5em;
@@ -2659,7 +2658,7 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 315px) {
+	@media screen and (max-width: 350px) {
 
 		#nav {
 			font-size: 0.45em;
