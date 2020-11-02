@@ -1759,40 +1759,6 @@ input, select, textarea {
 			padding-left: 0.25em;
 		}
 
-		/* web_icons */
-
-			ul.web_icons {
-				display: table;
-		  	margin: 0 auto;
-				cursor: default;
-				list-style: none;
-				margin-top: -25px;
-			}
-
-				ul.web_icons li {
-					position: relative;
-					display: inline-block;
-					margin: 0.25em;
-					top: 0;
-					padding-left: 0;
-				}
-
-					ul.web_icons li a {
-						-moz-transition: top .2s ease-in-out;
-						-webkit-transition: top .2s ease-in-out;
-						-ms-transition: top .2s ease-in-out;
-						transition: top .2s ease-in-out;
-						display: block;
-						width: 64px;
-						height: 48px;
-						border-radius: 6px;
-						top: 0;
-						position: relative;
-					}
-
-					ul.web_icons li a:hover {
-						top: -5px;
-					}
 
 /* Social */
 
