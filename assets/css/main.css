@@ -2302,6 +2302,7 @@ input, select, textarea {
   color: #4a54d6;
   display: block;
   transition: 0.3s;
+	height: 44px;
 }
 
 .sidebar a:hover {
@@ -2313,10 +2314,12 @@ input, select, textarea {
 	float: right;
 	background-color: #f7f7fb;
 	color: #4a54d6;
-	width: 50px;
+	width: 2em;
+	height: 40px;
 	font-size: 25px;
-  padding: 7px 15px;
-  border: none;
+	padding: 0px;
+	border: 1px solid #ddddee;
+	margin-top: 2px;
 }
 
 #openClosebtn:hover {
@@ -2676,10 +2679,6 @@ input, select, textarea {
 		#nav #always_visible {
 			display: inline-block;
 			font-size: 1.2em;
-		}
-
-		#openClosebtn {
-
 		}
 
 	}
