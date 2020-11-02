@@ -1666,10 +1666,6 @@ input, select, textarea {
 	input[type="reset"],
 	button,
 	.button {
-		background-image: url("images/bg.png"), -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
-		background-image: url("images/bg.png"), -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
-		background-image: url("images/bg.png"), -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
-		background-image: url("images/bg.png"), linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
 		-moz-transition: background-color .2s ease-in-out;
 		-webkit-transition: background-color .2s ease-in-out;
 		-ms-transition: background-color .2s ease-in-out;
@@ -1677,16 +1673,13 @@ input, select, textarea {
 		-webkit-appearance: none;
 		position: relative;
 		display: inline-block;
-		color: #fff !important;
 		text-decoration: none;
 		font-weight: 700;
 		border: 0;
 		outline: 0;
 		cursor: pointer;
 		border-radius: 8px;
-		text-shadow: -1px -1px 0.5px rgba(0, 0, 0, 0.5);
 		overflow: hidden;
-		box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.5), inset 0px 2px 1px 0px rgba(255, 255, 255, 0.75);
 		background-color: #43B3E0;
 		padding: 1em 2.35em 1em 2.35em;
 		font-size: 1.1em;
@@ -2288,6 +2281,53 @@ input, select, textarea {
 				color: #777;
 			}
 
+/* Collapsible Navbar */
+.sidebar {
+  height: 100%;
+  width: 0;
+	position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: #f7f7fb;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 22px;
+  color: #4a54d6;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  color: #fff !important;
+	background: #4a54d6;
+}
+
+#openClosebtn {
+	float: right;
+	background-color: #f7f7fb;
+	color: #4a54d6;
+	width: 50px;
+	font-size: 25px;
+  padding: 7px 15px;
+  border: none;
+}
+
+#openClosebtn:hover {
+	color: #fff;
+  background-color: #4a54d6;
+}
+
+#main {
+  transition: margin-right 0.5s;
+}
+
 /* Large */
 
 	@media screen and (max-width: 1280px) {
@@ -2578,18 +2618,13 @@ input, select, textarea {
 		#nav {
 			font-size: 1em;
 		}
-	}
-
-	@media screen and (max-width: 740px) {
 
 		#nav a {
-			color: #fff;
 			color: #4a54d6;
 		}
 
 		#nav a:hover {
-			color: #fff !important;
-			background: #4a54d6;
+			background-color: #4a54d6;
 		}
 
 	}
@@ -2610,66 +2645,49 @@ input, select, textarea {
 
 	}
 
-	@media screen and (max-width: 550px) {
+	@media screen and (min-width: 601px) {
 
-		#nav {
-			font-size: 0.75em;
+		#openClosebtn {
+			display: none;
+		}
+
+		.sidebar {
+			display: none;
 		}
 
 	}
 
-	@media screen and (max-width: 520px) {
+	@media screen and (max-width: 600px) {
 
-		#nav {
-			font-size: 0.7em;
+		#nav li {
+			display: none;
+		}
+
+		#nav #always_visible {
+			padding-left: 47px;
+			display: inline-block;
+			font-size: 1.5em;
+		}
+
+		#openClosebtn {
+			display: inline-block;
+		}
+
+		.sidebar {
+			display: block;
 		}
 
 	}
 
-	@media screen and (max-width: 490px) {
+	@media screen and (max-width: 300px) {
 
-		#nav {
-			font-size: 0.65em;
+		#nav #always_visible {
+			display: inline-block;
+			font-size: 1.2em;
 		}
 
-	}
+		#openClosebtn {
 
-	@media screen and (max-width: 460px) {
-
-		#nav {
-			font-size: 0.6em;
-		}
-
-	}
-
-	@media screen and (max-width: 414px) {
-
-		#nav {
-			font-size: 0.55em;
-		}
-
-	}
-
-	@media screen and (max-width: 380px) {
-
-		#nav {
-			font-size: 0.5em;
-		}
-
-	}
-
-	@media screen and (max-width: 350px) {
-
-		#nav {
-			font-size: 0.45em;
-		}
-
-	}
-
-	@media screen and (max-width: 320px) {
-
-		#nav {
-			font-size: 0.4em;
 		}
 
 	}

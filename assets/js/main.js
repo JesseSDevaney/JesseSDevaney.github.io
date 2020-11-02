@@ -32,3 +32,13 @@
 		});
 
 })(jQuery);
+
+function openCloseNav() {
+		if (document.getElementById("mySidebar").style.width == "230px") {
+			document.getElementById("mySidebar").style.width = "0px";
+		  document.getElementById("main").style.marginRight = "0px";
+		} else {
+			document.getElementById("mySidebar").style.width = "230px";
+		  document.getElementById("main").style.marginRight = "230px";
+		}
+}

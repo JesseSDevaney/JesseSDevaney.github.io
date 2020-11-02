@@ -13,17 +13,28 @@
 	</head>
 	<body class="is-preload">
 
+		<div id="main">
 		<!-- Nav -->
 			<nav class="background_style" id="nav">
 				<ul class="container">
-					<li><a href="/"><i class="fa fa-fw fa-home"></i> Jesse Devaney</a></li>
+					<li id="always_visible"><a href="/"><i class="fa fa-fw fa-home"></i> Jesse Devaney</a></li>
           <li><a href="experience.html"><i class="fa fa-fw fa-suitcase"></i> Experience</a></li>
 					<li><a href="projects.html"><i class="fa fa-fw fa-code"></i> Projects</a></li>
 					<li><a href="courses.html"><i class="fa fa-fw fa-university"></i> Courses</a></li>
 					<li><a href="resume/devaney_jesse_resume.pdf" target="_blank">Resume</a></li>
 					<li><a href="mindfulness.html"><i class="fa fa-fw fa-book"></i> Mindfulness</a></li>
+					<button id="openClosebtn" onclick="openCloseNav()">&#9776;</button>
 				</ul>
 			</nav>
+
+
+			<div id="mySidebar" class="sidebar">
+			  <a href="experience.html"><i class="fa fa-fw fa-suitcase"></i> Experience</a>
+			  <a href="projects.html"><i class="fa fa-fw fa-code"></i> Projects</a>
+			  <a href="courses.html"><i class="fa fa-fw fa-university"></i> Courses</a>
+				<a href="resume/devaney_jesse_resume.pdf" target="_blank">Resume</a>
+				<a href="mindfulness.html"><i class="fa fa-fw fa-book"></i> Mindfulness</a>
+			</div>
 
 		<!-- Home -->
 			<article id="top" class="wrapper style1">
@@ -83,6 +94,7 @@
 				</div>
 			</article>
 
+		</div>
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrolly.min.js"></script>
