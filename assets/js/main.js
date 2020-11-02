@@ -42,3 +42,13 @@ function openCloseNav() {
 		  document.getElementById("main").style.marginRight = "230px";
 		}
 }
+
+function closeSideNav() {
+		if (x.matches && document.getElementById("mySidebar").style.width == "230px") { // If media query matches
+		openCloseNav();
+	}
+}
+
+
+var x = window.matchMedia("(min-width: 601px)")
+x.addListener(closeSideNav)

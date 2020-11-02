@@ -2651,10 +2651,6 @@ input, select, textarea {
 			display: none;
 		}
 
-		.sidebar {
-			display: none;
-		}
-
 	}
 
 	@media screen and (max-width: 600px) {
@@ -2671,10 +2667,6 @@ input, select, textarea {
 
 		#openClosebtn {
 			display: inline-block;
-		}
-
-		.sidebar {
-			display: block;
 		}
 
 	}
